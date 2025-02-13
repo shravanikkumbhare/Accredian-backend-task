@@ -50,6 +50,13 @@ app.post("/refer", async (req, res) => {
     }
 
     try {
+        const existingReferral = await prisma.referral.findUnique({
+            where: { referEmail },
+        });
+
+        if (existingReferral) {
+            return res.status(409).json({ error: "This email has already been referred!" });
+        }
         // Store in DB
         const newReferral = await prisma.referral.create({
             data: { referName, referryName, referEmail, mobile },
